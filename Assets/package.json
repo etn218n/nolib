@@ -1,6 +1,6 @@
 {
   "name": "com.duy.nolib",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "displayName": "Nolib",
   "description": "Library for node-based state machine and other data structures",
   "unity": "2023.2",
@@ -11,7 +11,7 @@
   "keywords": [],
   "samples": null,
   "publishConfig": {
-    "registry": "https://duy-npm.com/"
+    "registry": "http://duy-npm.com/"
   },
   "author": {
     "name": "Duy",
