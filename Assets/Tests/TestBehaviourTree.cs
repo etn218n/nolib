@@ -1,6 +1,5 @@
 using Nolib.Node;
 using NUnit.Framework;
-using UnityEngine;
 
 namespace Tests
 {
@@ -15,7 +14,7 @@ namespace Tests
             var bt = new Sequencer(a, b, c);
             bt.Start();
 
-            Assert.IsTrue(bt.Tick() == NodeStatus.Success);
+            Assert.IsTrue(bt.Tick(0) == NodeStatus.Success);
         }
         
         [Test]
@@ -27,7 +26,7 @@ namespace Tests
             var bt = new Sequencer(a, b, c);
             bt.Start();
 
-            Assert.IsTrue(bt.Tick() == NodeStatus.Failure);
+            Assert.IsTrue(bt.Tick(0) == NodeStatus.Failure);
         }
         
         [Test]
@@ -39,7 +38,7 @@ namespace Tests
             var bt = new Selector(a, b, c);
             bt.Start();
 
-            Assert.IsTrue(bt.Tick() == NodeStatus.Success);
+            Assert.IsTrue(bt.Tick(0) == NodeStatus.Success);
         }
         
         [Test]
@@ -51,7 +50,7 @@ namespace Tests
             var bt = new Selector(a, b, c);
             bt.Start();
 
-            Assert.IsTrue(bt.Tick() == NodeStatus.Failure);
+            Assert.IsTrue(bt.Tick(0) == NodeStatus.Failure);
         }
         
         [Test]
@@ -64,7 +63,7 @@ namespace Tests
             var bt = new Parallel(Parallel.TerminationPolicy.AnyFailure, a, b, c);
             bt.Start();
 
-            Assert.IsTrue(bt.Tick() == NodeStatus.Running && n == 3);
+            Assert.IsTrue(bt.Tick(0) == NodeStatus.Running && n == 3);
         }
     }
 }

@@ -51,34 +51,34 @@ namespace Nolib.Node
             OnEnter();
         }
 
-        public NodeStatus Tick(float deltaTime = 0)
+        public NodeStatus Tick(float deltaTime)
         {
             return OnTick(deltaTime);
         }
         
-        public void PreTick(float deltaTime = 0)
+        public void PreTick(float deltaTime)
         {
             OnPreTick(deltaTime);
         }
         
-        public void PostTick(float deltaTime = 0)
+        public void PostTick(float deltaTime)
         {
             OnPostTick(deltaTime);
         }
 
-        public void Update()
+        public void Update(float deltaTime)
         {
-            OnUpdate();
+            OnUpdate(deltaTime);
         }
 
-        public void FixedUpdate()
+        public void FixedUpdate(float deltaTime)
         {
-            OnFixedUpdate();
+            OnFixedUpdate(deltaTime);
         }
         
-        public void LateUpdate()
+        public void LateUpdate(float deltaTime)
         {
-            OnLateUpdate();
+            OnLateUpdate(deltaTime);
         }
         
         public void AnimatorMove()

@@ -1,6 +1,5 @@
 using Nolib.Node;
 using NUnit.Framework;
-using UnityEngine;
 using UnityEngine.Events;
 
 namespace Tests
@@ -31,7 +30,7 @@ namespace Tests
             fsm.AddTransitionFrom(stateA).To(stateB).When(() => true);
             fsm.AddTransitionFrom(stateB).To(stateC).When(() => true);
             fsm.Start(stateB);
-            fsm.Tick();
+            fsm.Tick(0);
 
             Assert.IsTrue(fsm.CurrentNode == stateC);
         }
@@ -80,7 +79,7 @@ namespace Tests
             fsm.AddTransitionFrom(stateA).To(stateB).When(() => n == 1);
             fsm.Start();
             n = 1;
-            fsm.Tick();
+            fsm.Tick(0);
 
             Assert.IsTrue(fsm.CurrentNode == stateB);
         }
@@ -99,9 +98,9 @@ namespace Tests
             subFSM.AddTransitionFrom(stateB).To(stateC).When(() => n == 2);
             fsm.Start();
             n = 1;
-            fsm.Tick();
+            fsm.Tick(0);
             n = 2;
-            fsm.Tick();
+            fsm.Tick(0);
 
             Assert.IsTrue(fsm.CurrentNode == subFSM && subFSM.CurrentNode == stateC);
         }
@@ -120,9 +119,9 @@ namespace Tests
             fsm.AddTransitionFrom(stateB).To(stateC).When(unityEventC);
             fsm.Start();
             unityEventB.Invoke();
-            fsm.Tick();
+            fsm.Tick(0);
             unityEventC.Invoke();
-            fsm.Tick();
+            fsm.Tick(0);
             
             Assert.IsTrue(fsm.CurrentNode == stateC);
         }
@@ -144,11 +143,11 @@ namespace Tests
             subFSMB.AddTransitionFrom(stateC).To(stateD).When(() => n == 3);
             fsm.Start();
             n = 1;
-            fsm.Tick();
+            fsm.Tick(0);
             n = 2;
-            fsm.Tick();
+            fsm.Tick(0);
             n = 3;
-            fsm.Tick();
+            fsm.Tick(0);
             
             Assert.IsTrue(fsm.CurrentNode == subFSMA && subFSMA.CurrentNode == subFSMB && subFSMB.CurrentNode == stateD);
         }
@@ -166,9 +165,9 @@ namespace Tests
             fsm.AddTransitionFromAnyNode().To(stateC).When(() => n == 2);
             fsm.Start();
             n = 1;
-            fsm.Tick();
+            fsm.Tick(0);
             n = 2;
-            fsm.Tick();
+            fsm.Tick(0);
 
             Assert.IsTrue(fsm.CurrentNode == stateC);
         }
@@ -187,9 +186,9 @@ namespace Tests
             fsm.AddTransitionFromAnyNode().To(stateC).When(unityEventC);
             fsm.Start();
             unityEventB.Invoke();
-            fsm.Tick();
+            fsm.Tick(0);
             unityEventC.Invoke();
-            fsm.Tick();
+            fsm.Tick(0);
             
             Assert.IsTrue(fsm.CurrentNode == stateC);
         }
@@ -207,9 +206,9 @@ namespace Tests
             fsm.AddTransitionFromAnyNode().To(stateC).When(() => n == 1);
             fsm.Start();
             n = 1;
-            fsm.Tick();
+            fsm.Tick(0);
             n = 1;
-            fsm.Tick();
+            fsm.Tick(0);
 
             Assert.IsTrue(fsm.CurrentNode == stateC && n == 1);
         }
@@ -225,9 +224,9 @@ namespace Tests
             fsm.AddTransitionFrom(stateA).To(stateB).When(() => true);
             fsm.AddTransitionFrom(stateB).ToPreviousNode().When(() => n == 1);
             fsm.Start();
-            fsm.Tick();
+            fsm.Tick(0);
             n = 1;
-            fsm.Tick();
+            fsm.Tick(0);
 
             Assert.IsTrue(fsm.CurrentNode == stateA);
         }
@@ -243,9 +242,9 @@ namespace Tests
             fsm.AddTransitionFrom(stateA).To(stateB).When(() => true);
             fsm.AddTransitionFrom(stateB).ToPreviousNode().When(unityEvent);
             fsm.Start();
-            fsm.Tick();
+            fsm.Tick(0);
             unityEvent.Invoke();
-            fsm.Tick();
+            fsm.Tick(0);
 
             Assert.IsTrue(fsm.CurrentNode == stateA);
         }
@@ -264,11 +263,11 @@ namespace Tests
             fsm.AddTransitionFrom(stateB).To(stateC).When(() => conditionValue == 2);
             fsm.Start();
             conditionValue = 1;
-            fsm.Tick();
+            fsm.Tick(0);
             conditionValue = 2;
-            fsm.Tick();
+            fsm.Tick(0);
             fsm.SetCurrentNode(stateA);
-            fsm.Tick();
+            fsm.Tick(0);
 
             Assert.IsTrue(fsm.CurrentNode == stateA && stateName == "A");
         }
@@ -286,7 +285,7 @@ namespace Tests
             fsm.AddTransitionFromSelectorNode().To(stateB).When(() => n == 2);
             fsm.AddTransitionFromSelectorNode().To(stateC).When(() => n == 3);
             fsm.Start();
-            fsm.Tick();
+            fsm.Tick(0);
 
             Assert.IsTrue(fsm.CurrentNode == stateB);
         }

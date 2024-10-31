@@ -67,7 +67,7 @@ namespace Nolib.Node
                 TransitionToNode(qualifiedTransition.Destination);
         }
 
-        public NodeStatus Tick(float deltaTime = 0)
+        public NodeStatus Tick(float deltaTime)
         {
             var qualifiedTransition = CheckForQualifiedTransition(currentTransitionSet);
             
@@ -91,20 +91,20 @@ namespace Nolib.Node
 
         public void PreTick(float deltaTime) => currentNode.OnPreTick(deltaTime);
         public void PostTick(float deltaTime) => currentNode.OnPostTick(deltaTime);
-        public void Update() => currentNode.OnUpdate();
-        public void FixedUpdate() => currentNode.OnFixedUpdate();
-        public void LateUpdate() => currentNode.OnLateUpdate();
+        public void Update(float deltaTime) => currentNode.OnUpdate(deltaTime);
+        public void FixedUpdate(float deltaTime) => currentNode.OnFixedUpdate(deltaTime);
+        public void LateUpdate(float deltaTime) => currentNode.OnLateUpdate(deltaTime);
         public void AnimatorMove() => currentNode.OnAnimatorMove();
         #endregion
 
         #region Node Callbacks
-        protected internal override NodeStatus OnTick(float deltaTime = 0) => Tick(deltaTime);
-        protected internal override void OnPreTick(float deltaTime = 0) => PreTick(deltaTime);
-        protected internal override void OnPostTick(float deltaTime = 0) => PostTick(deltaTime);
+        protected internal override NodeStatus OnTick(float deltaTime) => Tick(deltaTime);
+        protected internal override void OnPreTick(float deltaTime) => PreTick(deltaTime);
+        protected internal override void OnPostTick(float deltaTime) => PostTick(deltaTime);
         protected internal override void OnEnter() => Start();
-        protected internal override void OnUpdate() => Update();
-        protected internal override void OnFixedUpdate() => FixedUpdate();
-        protected internal override void OnLateUpdate() => LateUpdate();
+        protected internal override void OnUpdate(float deltaTime) => Update(deltaTime);
+        protected internal override void OnFixedUpdate(float deltaTime) => FixedUpdate(deltaTime);
+        protected internal override void OnLateUpdate(float deltaTime) => LateUpdate(deltaTime);
         protected internal override void OnAnimatorMove() => AnimatorMove();
         
         protected internal override void OnExit()
