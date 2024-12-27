@@ -4,9 +4,8 @@ namespace Nolib.Node
 {
     public class ActionNode : Node
     {
-        public Action EnterAction        = () => { };
-        public Action ExitAction         = () => { };
-        public Action AnimatorMoveAction = () => { };
+        public Action EnterAction = () => { };
+        public Action ExitAction  = () => { };
         
         public Action<float> UpdateAction      = deltaTime => { };
         public Action<float> FixedUpdateAction = deltaTime => { };
@@ -18,7 +17,6 @@ namespace Nolib.Node
 
         protected internal override void OnEnter() => EnterAction();
         protected internal override void OnExit() => ExitAction();
-        protected internal override void OnAnimatorMove() => AnimatorMoveAction();
         protected internal override void OnUpdate(float deltaTime) => UpdateAction(deltaTime);
         protected internal override void OnFixedUpdate(float deltaTime) => FixedUpdateAction(deltaTime);
         protected internal override void OnLateUpdate(float deltaTime) => LateUpdateAction(deltaTime);
@@ -31,13 +29,12 @@ namespace Nolib.Node
     {
         protected T context;
         
-        public Action<T> EnterAction        = context => { };
-        public Action<T> ExitAction         = context => { };
-        public Action<T> AnimatorMoveAction = context => { };
+        public Action<T> EnterAction = context => { };
+        public Action<T> ExitAction  = context => { };
         
-        public Action<T, float> UpdateAction       = (context, deltaTime) => { };
-        public Action<T, float> FixedUpdateAction  = (context, deltaTime) => { };
-        public Action<T, float> LateUpdateAction   = (context, deltaTime) => { };
+        public Action<T, float> UpdateAction      = (context, deltaTime) => { };
+        public Action<T, float> FixedUpdateAction = (context, deltaTime) => { };
+        public Action<T, float> LateUpdateAction  = (context, deltaTime) => { };
         
         public Func<T, float, NodeStatus> TickAction = (context, deltaTime) => NodeStatus.Failure;
         public Action<T, float> PreTickAction  = (context, deltaTime) => { };
@@ -47,7 +44,6 @@ namespace Nolib.Node
 
         protected internal override void OnEnter() => EnterAction(context);
         protected internal override void OnExit() => ExitAction(context);
-        protected internal override void OnAnimatorMove() => AnimatorMoveAction(context);
         protected internal override void OnUpdate(float deltaTime) => UpdateAction(context, deltaTime);
         protected internal override void OnFixedUpdate(float deltaTime) => FixedUpdateAction(context, deltaTime);
         protected internal override void OnLateUpdate(float deltaTime) => LateUpdateAction(context, deltaTime);

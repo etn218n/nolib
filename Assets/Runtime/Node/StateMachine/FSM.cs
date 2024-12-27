@@ -94,7 +94,6 @@ namespace Nolib.Node
         public void Update(float deltaTime) => currentNode.OnUpdate(deltaTime);
         public void FixedUpdate(float deltaTime) => currentNode.OnFixedUpdate(deltaTime);
         public void LateUpdate(float deltaTime) => currentNode.OnLateUpdate(deltaTime);
-        public void AnimatorMove() => currentNode.OnAnimatorMove();
         #endregion
 
         #region Node Callbacks
@@ -105,7 +104,6 @@ namespace Nolib.Node
         protected internal override void OnUpdate(float deltaTime) => Update(deltaTime);
         protected internal override void OnFixedUpdate(float deltaTime) => FixedUpdate(deltaTime);
         protected internal override void OnLateUpdate(float deltaTime) => LateUpdate(deltaTime);
-        protected internal override void OnAnimatorMove() => AnimatorMove();
         
         protected internal override void OnExit()
         {

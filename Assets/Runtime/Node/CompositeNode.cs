@@ -81,11 +81,6 @@ namespace Nolib.Node
             OnLateUpdate(deltaTime);
         }
         
-        public void AnimatorMove()
-        {
-            OnAnimatorMove();
-        }
-        
         protected internal override void OnEnter()
         {
             isConditionMet = condition.Invoke();

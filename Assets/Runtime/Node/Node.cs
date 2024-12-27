@@ -36,7 +36,6 @@ namespace Nolib.Node
 
         protected internal virtual void OnEnter() { }
         protected internal virtual void OnExit() { }
-        protected internal virtual void OnAnimatorMove() { }
         protected internal virtual void OnUpdate(float deltaTime) { }
         protected internal virtual void OnFixedUpdate(float deltaTime) { }
         protected internal virtual void OnLateUpdate(float deltaTime) { }
