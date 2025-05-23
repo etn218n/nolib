@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Nolib.DataStructure
 {
@@ -205,6 +206,27 @@ namespace Nolib.DataStructure
 
             return buffer[head];
         }
+
+        public T PeekHead(int steps)
+        {
+            int targetIndex;
+            
+            if (steps >= 0)
+            {
+                targetIndex = IncrementIndex(head, steps);
+            }
+            else
+            {
+                var cachedHead = head;
+                
+                for (var i = 0; i < Math.Abs(steps); i++)
+                    cachedHead = DecrementIndex(cachedHead);
+                
+                targetIndex = cachedHead;
+            }
+                
+            return buffer[targetIndex];
+        }
         
         public T PeekTail()
         {
@@ -214,6 +236,27 @@ namespace Nolib.DataStructure
             return buffer[tail];
         }
 
+        public T PeekTail(int steps)
+        {
+            int targetIndex;
+            
+            if (steps >= 0)
+            {
+                var cachedTail = tail;
+                
+                for (var i = 0; i < steps; i++)
+                    cachedTail = DecrementIndex(cachedTail);
+                
+                targetIndex = cachedTail;
+            }
+            else
+            {
+                targetIndex = IncrementIndex(tail, Math.Abs(steps));
+            }
+                
+            return buffer[targetIndex];
+        }
+        
         public bool Contains(T element)
         {
             var bufferIndex = head;
@@ -283,9 +326,9 @@ namespace Nolib.DataStructure
             return resizedBuffer;
         }
         
-        private int IncrementIndex(int index, int step = 1)
+        private int IncrementIndex(int index, int steps = 1)
         {
-            return (index + step) % currentCapacity;
+            return (index + steps) % currentCapacity;
         }
 
         private int DecrementIndex(int index)

@@ -178,6 +178,14 @@ namespace Nolib.Node
             TransitionToNode(node);
         }
 
+        // peek node from the tail of the stack.
+        // Index 0 means the current node (tail index)
+        // Index 1 means the previous node (tail - 1 index)
+        public Node GetNodeHistory(int index)
+        {
+            return nodeStack.PeekTail(index);
+        }
+
         public RegularSourceNode AddTransitionFrom(Node source) => new RegularSourceNode(this, source);
         public AnyNode AddTransitionFromAnyNode() => new AnyNode(this);
         public SelectorNode AddTransitionFromSelectorNode() => new SelectorNode(this);

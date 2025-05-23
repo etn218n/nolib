@@ -52,6 +52,66 @@ namespace Tests
         }
         
         [Test]
+        public void PeekHeadIncrementally_ReturnHeadPlusN()
+        {
+            var circularBuffer = new CircularBuffer<string>(4);
+
+            circularBuffer.PushHead("A");
+            circularBuffer.PushHead("B");
+            circularBuffer.PushHead("C");
+            circularBuffer.PushHead("D");
+            
+            var secondElementFromHead = circularBuffer.PeekHead(1);
+
+            Assert.IsTrue(secondElementFromHead == "C");
+        }
+        
+        [Test]
+        public void PeekHeadDecrementally_ReturnHeadMinusN()
+        {
+            var circularBuffer = new CircularBuffer<string>(4);
+
+            circularBuffer.PushHead("A");
+            circularBuffer.PushHead("B");
+            circularBuffer.PushHead("C");
+            circularBuffer.PushHead("D");
+            
+            var secondElementFromTail = circularBuffer.PeekHead(-2);
+
+            Assert.IsTrue(secondElementFromTail == "B");
+        }
+        
+        [Test]
+        public void PeekTailIncrementally_ReturnTailMinusN()
+        {
+            var circularBuffer = new CircularBuffer<string>(4);
+
+            circularBuffer.PushHead("A");
+            circularBuffer.PushHead("B");
+            circularBuffer.PushHead("C");
+            circularBuffer.PushHead("D");
+
+            var secondElementFromTail = circularBuffer.PeekTail(1);
+
+            Assert.IsTrue(secondElementFromTail == "B");
+        }
+        
+        [Test]
+        public void PeekTailDecrementally_ReturnTailPlusN()
+        {
+            var circularBuffer = new CircularBuffer<string>(4);
+
+            circularBuffer.PushHead("A");
+            circularBuffer.PushHead("B");
+            circularBuffer.PushHead("C");
+            circularBuffer.PushHead("D");
+
+            var secondElementFromHead = circularBuffer.PeekTail(-2);
+
+            Assert.IsTrue(secondElementFromHead == "C");
+        }
+        
+        [Test]
         public void PopTail_HeadEqualsTail_WhenBufferEmpty()
         {
             var circularBuffer = new CircularBuffer<string>(3);
