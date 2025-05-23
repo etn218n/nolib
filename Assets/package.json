@@ -1,6 +1,6 @@
 {
   "name": "com.duy.nolib",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "displayName": "Nolib",
   "description": "Library for node-based state machine and other data structures",
   "documentationUrl": "",
