@@ -4,20 +4,27 @@ using UnityEngine;
 
 namespace Nolib.Node
 {
-    public abstract class CompositeNode : Node
+    public abstract class CompositeNode : INode
     {
-        protected List<Node> children;
+        protected List<INode> children;
         protected Func<bool> condition;
         protected bool isConditionMet;
+        protected INode parent;
+        
+        INode INode.Parent
+        {
+            get => parent;
+            set => parent = value;
+        }
 
-        protected CompositeNode(params Node[] children) : this(() => true, children)
+        protected CompositeNode(params INode[] children) : this(() => true, children)
         {
         }
 
-        protected CompositeNode(Func<bool> condition, params Node[] children)
+        protected CompositeNode(Func<bool> condition, params INode[] children)
         {
             this.condition = condition;
-            this.children  = new List<Node>(children.Length);
+            this.children  = new List<INode>(children.Length);
 
             foreach (var node in children)
             {
@@ -26,7 +33,7 @@ namespace Nolib.Node
             }
         }
 
-        public void AddChildNode(Node node)
+        public void AddChildNode(INode node)
         {
             if (!IsValidNode(node))
                 return;
@@ -36,7 +43,7 @@ namespace Nolib.Node
             OnChildNodeAdded(node);
         }
         
-        public void RemoveChildNode(Node node)
+        public void RemoveChildNode(INode node)
         {
             if (!node.IsChildOf(this))
                 return;
@@ -46,47 +53,34 @@ namespace Nolib.Node
             OnChildNodeRemoved(node);
         }
 
-        public void Start()
-        {
-            OnEnter();
-        }
-
-        public NodeStatus Tick(float deltaTime)
-        {
-            return OnTick(deltaTime);
-        }
+        public void Start() => InternalOnEnter();
+        public void Update(float deltaTime) => InternalUpdate(deltaTime);
+        public void FixedUpdate(float deltaTime) => InternalFixedUpdate(deltaTime);
+        public void LateUpdate(float deltaTime) => InternalLateUpdate(deltaTime);
+        public void Exit() => InternalExit();
+        public void PreTick(float deltaTime) => InternalPreTick(deltaTime);
+        public void PostTick(float deltaTime) => InternalPostTick(deltaTime);
+        public NodeStatus Tick(float deltaTime) => InternalOnTick(deltaTime);
         
-        public void PreTick(float deltaTime)
-        {
-            OnPreTick(deltaTime);
-        }
-        
-        public void PostTick(float deltaTime)
-        {
-            OnPostTick(deltaTime);
-        }
+        void INode.OnEnter() => InternalOnEnter();
+        void INode.OnUpdate(float deltaTime) => InternalUpdate(deltaTime);
+        void INode.OnFixedUpdate(float deltaTime) => InternalFixedUpdate(deltaTime);
+        void INode.OnLateUpdate(float deltaTime) => InternalLateUpdate(deltaTime);
+        void INode.OnExit() => InternalExit();
+        void INode.OnPreTick(float deltaTime) => InternalPreTick(deltaTime);
+        void INode.OnPostTick(float deltaTime) => InternalPostTick(deltaTime);
+        NodeStatus INode.OnTick(float deltaTime) => InternalOnTick(deltaTime);
 
-        public void Update(float deltaTime)
-        {
-            OnUpdate(deltaTime);
-        }
+        protected internal virtual void InternalOnEnter() => isConditionMet = condition.Invoke();
+        protected internal virtual void InternalUpdate(float deltaTime) { }
+        protected internal virtual void InternalFixedUpdate(float deltaTime) { }
+        protected internal virtual void InternalLateUpdate(float deltaTime) { }
+        protected internal virtual void InternalExit() { }
+        protected internal virtual void InternalPreTick(float deltaTime) { }
+        protected internal virtual void InternalPostTick(float deltaTime) { }
+        protected internal virtual NodeStatus InternalOnTick(float deltaTime) => NodeStatus.Failure;
 
-        public void FixedUpdate(float deltaTime)
-        {
-            OnFixedUpdate(deltaTime);
-        }
-        
-        public void LateUpdate(float deltaTime)
-        {
-            OnLateUpdate(deltaTime);
-        }
-        
-        protected internal override void OnEnter()
-        {
-            isConditionMet = condition.Invoke();
-        }
-
-        protected bool IsValidNode(Node node)
+        protected bool IsValidNode(INode node)
         {
             if (node == null)
                 throw new NullReferenceException();
@@ -106,7 +100,7 @@ namespace Nolib.Node
             return true;
         }
         
-        protected virtual void OnChildNodeAdded(Node node) { }
-        protected virtual void OnChildNodeRemoved(Node node) { }
+        protected virtual void OnChildNodeAdded(INode node) { }
+        protected virtual void OnChildNodeRemoved(INode node) { }
     }
 }

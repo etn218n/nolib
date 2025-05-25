@@ -8,15 +8,15 @@ namespace Nolib.Node
     public class RegularSourceNode
     {
         private FSM fsm;
-        private Node source;
+        private INode source;
         
-        public RegularSourceNode(FSM fsm, Node source)
+        public RegularSourceNode(FSM fsm, INode source)
         {
             this.fsm = fsm;
             this.source = source;
         }
 
-        public RegularDestinationNode To(Node destination)
+        public RegularDestinationNode To(INode destination)
         {
             return new RegularDestinationNode(fsm, source, destination, NodeType.Regular);
         }
@@ -35,11 +35,11 @@ namespace Nolib.Node
     public class RegularDestinationNode
     {
         private FSM fsm;
-        private Node source;
-        private Node destination;
+        private INode source;
+        private INode destination;
         private NodeType sourceType;
         
-        public RegularDestinationNode(FSM fsm, Node source, Node destination, NodeType sourceType)
+        public RegularDestinationNode(FSM fsm, INode source, INode destination, NodeType sourceType)
         {
             this.fsm = fsm;
             this.source = source;
@@ -87,7 +87,7 @@ namespace Nolib.Node
             this.fsm = fsm;
         }
 
-        public RegularDestinationNode To(Node destination)
+        public RegularDestinationNode To(INode destination)
         {
             return new RegularDestinationNode(fsm, null, destination, NodeType.Any);
         }
@@ -102,7 +102,7 @@ namespace Nolib.Node
             this.fsm = fsm;
         }
 
-        public RegularDestinationNode To(Node destination)
+        public RegularDestinationNode To(INode destination)
         {
             return new RegularDestinationNode(fsm, null, destination, NodeType.Selector);
         }
@@ -111,9 +111,9 @@ namespace Nolib.Node
     public class ExitNode
     {
         private FSM fsm;
-        private Node source;
+        private INode source;
         
-        public ExitNode(FSM fsm, Node source)
+        public ExitNode(FSM fsm, INode source)
         {
             this.fsm    = fsm;
             this.source = source;
@@ -138,9 +138,9 @@ namespace Nolib.Node
     public class PreviousNode
     {
         private FSM fsm;
-        private Node source;
+        private INode source;
         
-        public PreviousNode(FSM fsm, Node source)
+        public PreviousNode(FSM fsm, INode source)
         {
             this.fsm    = fsm;
             this.source = source;

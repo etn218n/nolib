@@ -5,8 +5,8 @@ namespace Nolib.Node
 {
     public interface ITransition
     {
-        Node Source { get; }
-        Node Destination { get; }
+        INode Source { get; }
+        INode Destination { get; }
         ICondition Condition { get; }
 
         void ActivateCondition();
@@ -15,27 +15,27 @@ namespace Nolib.Node
     
     public class Transition : ITransition
     {
-        public Node Source { get; }
-        public Node Destination { get; }
+        public INode Source { get; }
+        public INode Destination { get; }
         public ICondition Condition { get; }
 
         public static Transition Empty = new Transition(null, null, () => false);
         
-        public Transition(Node source, Node destination, Func<bool> predicate)
+        public Transition(INode source, INode destination, Func<bool> predicate)
         {
             Source      = source;
             Destination = destination;
             Condition   = new PollCondition(predicate);
         }
         
-        public Transition(Node source, Node destination, UnityEvent unityEvent)
+        public Transition(INode source, INode destination, UnityEvent unityEvent)
         {
             Source      = source;
             Destination = destination;
             Condition   = new UnityEventCondition(unityEvent);
         }
 
-        public Transition(Node source, Node destination, ICondition condition)
+        public Transition(INode source, INode destination, ICondition condition)
         {
             Source      = source;
             Destination = destination;
@@ -55,11 +55,11 @@ namespace Nolib.Node
 
     public class Transition<T> : ITransition
     {
-        public Node Source { get; }
-        public Node Destination { get; }
+        public INode Source { get; }
+        public INode Destination { get; }
         public ICondition Condition { get; }
 
-        public Transition(Node source, Node destination, UnityEvent<T> unityEvent)
+        public Transition(INode source, INode destination, UnityEvent<T> unityEvent)
         {
             Source      = source;
             Destination = destination;

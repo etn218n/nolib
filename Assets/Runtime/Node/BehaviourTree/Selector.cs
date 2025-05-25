@@ -7,17 +7,17 @@ namespace Nolib.Node
         private int currentIndex;
         private NodeStatus currentStatus;
 
-        public Selector(params Node[] children) : base(children)
+        public Selector(params INode[] children) : base(children)
         {
             currentStatus = NodeStatus.Failure;
         }
 
-        public Selector(Func<bool> condition, params Node[] children) : base(condition, children)
+        public Selector(Func<bool> condition, params INode[] children) : base(condition, children)
         {
             currentStatus = NodeStatus.Failure;
         }
 
-        protected internal override NodeStatus OnTick(float deltaTime)
+        protected internal override NodeStatus InternalOnTick(float deltaTime)
         {
             if (!isConditionMet)
                 return NodeStatus.Failure;

@@ -7,18 +7,19 @@ using Nolib.DataStructure;
 
 namespace Nolib.Node
 {
-    public class FSM : Node
+    public class FSM : INode
     {
         #region Fields & Properties
         protected readonly string name;
-        protected readonly CircularBuffer<Node> nodeStack;
-        protected readonly Dictionary<Node, List<ITransition>> transitionMap;
-        protected readonly Dictionary<Node, List<ITransition>> anyNodeTransitionMap;
+        protected readonly CircularBuffer<INode> nodeStack;
+        protected readonly Dictionary<INode, List<ITransition>> transitionMap;
+        protected readonly Dictionary<INode, List<ITransition>> anyNodeTransitionMap;
 
-        protected Node selectorNode;
-        protected Node exitNode;
-        protected Node currentNode;
-        protected Node traceBackNode;
+        protected INode parent;
+        protected INode selectorNode;
+        protected INode exitNode;
+        protected INode currentNode;
+        protected INode traceBackNode;
         
         protected bool isCompleted;
         protected int maxStackSize;
@@ -28,19 +29,25 @@ namespace Nolib.Node
         public int StateCount => transitionMap.Keys.Count - 1;
         public int MaxStackSize => maxStackSize;
         public bool IsCompleted => isCompleted;
-        public Node CurrentNode => currentNode;
-        public IReadOnlyCollection<Node> Nodes => transitionMap.Keys;
+        public INode CurrentNode => currentNode;
+        public IReadOnlyCollection<INode> Nodes => transitionMap.Keys;
         public IReadOnlyCollection<ITransition> CurrentTransitionSet => currentTransitionSet;
-        public IReadOnlyCollection<ITransition> TransitionsFrom(Node node) => transitionMap[node];
+        public IReadOnlyCollection<ITransition> TransitionsFrom(INode node) => transitionMap[node];
+        
+        INode INode.Parent
+        {
+            get => parent;
+            set => parent = value;
+        }
 
         public FSM(string name = "FSM", int maxStackSize = 20)
         {
             this.name = name;
             this.maxStackSize = maxStackSize;
             
-            nodeStack = new CircularBuffer<Node>(maxStackSize);
-            transitionMap = new Dictionary<Node, List<ITransition>>();
-            anyNodeTransitionMap = new Dictionary<Node, List<ITransition>>();
+            nodeStack = new CircularBuffer<INode>(maxStackSize);
+            transitionMap = new Dictionary<INode, List<ITransition>>();
+            anyNodeTransitionMap = new Dictionary<INode, List<ITransition>>();
             currentTransitionSet = new List<ITransition>();
             
             selectorNode  = new EmptyNode();
@@ -54,7 +61,7 @@ namespace Nolib.Node
         #endregion
 
         #region Run FSM
-        public void Start(Node entryNode = null)
+        public void Start(INode entryNode = null)
         {
             isCompleted = false;
 
@@ -97,15 +104,14 @@ namespace Nolib.Node
         #endregion
 
         #region Node Callbacks
-        protected internal override NodeStatus OnTick(float deltaTime) => Tick(deltaTime);
-        protected internal override void OnPreTick(float deltaTime) => PreTick(deltaTime);
-        protected internal override void OnPostTick(float deltaTime) => PostTick(deltaTime);
-        protected internal override void OnEnter() => Start();
-        protected internal override void OnUpdate(float deltaTime) => Update(deltaTime);
-        protected internal override void OnFixedUpdate(float deltaTime) => FixedUpdate(deltaTime);
-        protected internal override void OnLateUpdate(float deltaTime) => LateUpdate(deltaTime);
-        
-        protected internal override void OnExit()
+        NodeStatus INode.OnTick(float deltaTime) => Tick(deltaTime);
+        void INode.OnPreTick(float deltaTime) => PreTick(deltaTime);
+        void INode.OnPostTick(float deltaTime) => PostTick(deltaTime);
+        void INode.OnEnter() => Start();
+        void INode.OnUpdate(float deltaTime) => Update(deltaTime);
+        void INode.OnFixedUpdate(float deltaTime) => FixedUpdate(deltaTime);
+        void INode.OnLateUpdate(float deltaTime) => LateUpdate(deltaTime);
+        void INode.OnExit()
         {
             nodeStack.Clear();
             TransitionToNode(selectorNode);
@@ -113,7 +119,7 @@ namespace Nolib.Node
         #endregion
 
         #region Node Operations
-        public bool Contains(Node node)
+        public bool Contains(INode node)
         {
             if (transitionMap.ContainsKey(node))
                 return true;
@@ -125,7 +131,7 @@ namespace Nolib.Node
             return subFSMs.Any(sub => sub.Contains(node));
         }
 
-        protected void AddNode(Node node)
+        protected void AddNode(INode node)
         {
             if (!node.IsChildOf(this))
                 node.Attach(this);
@@ -137,14 +143,14 @@ namespace Nolib.Node
                 transitionMap.Add(node, new List<ITransition>());
         }
         
-        protected void SetEntryNode(Node node)
+        protected void SetEntryNode(INode node)
         {
             // override all transitions from Selector node
             transitionMap[selectorNode].Clear();
             transitionMap[selectorNode].Add(new Transition(selectorNode, node, () => true));
         }
 
-        public void RemoveNode(Node node)
+        public void RemoveNode(INode node)
         {
             var foundNode = Nodes.FirstOrDefault(s => s == node);
 
@@ -152,9 +158,7 @@ namespace Nolib.Node
             {
                 foundNode.Detach(this);
                 transitionMap.Remove(node);
-                
-                if (anyNodeTransitionMap.ContainsKey(node))
-                    anyNodeTransitionMap.Remove(node);
+                anyNodeTransitionMap.Remove(node);
 
                 foreach (var n in transitionMap.Keys)
                 {
@@ -170,7 +174,7 @@ namespace Nolib.Node
             }
         }
 
-        public void SetCurrentNode(Node node)
+        public void SetCurrentNode(INode node)
         {
             if (!Contains(node))
                 return;
@@ -181,16 +185,16 @@ namespace Nolib.Node
         // peek node from the tail of the stack.
         // Index 0 means the current node (tail index)
         // Index 1 means the previous node (tail - 1 index)
-        public Node GetNodeHistory(int index)
+        public INode GetNodeHistory(int index)
         {
             return nodeStack.PeekTail(index);
         }
 
-        public RegularSourceNode AddTransitionFrom(Node source) => new RegularSourceNode(this, source);
+        public RegularSourceNode AddTransitionFrom(INode source) => new RegularSourceNode(this, source);
         public AnyNode AddTransitionFromAnyNode() => new AnyNode(this);
         public SelectorNode AddTransitionFromSelectorNode() => new SelectorNode(this);
 
-        protected internal void AddTransition(Node source, Node destination, Func<bool> predicate)
+        protected internal void AddTransition(INode source, INode destination, Func<bool> predicate)
         {
             if (!IsValidNode(source) || !IsValidNode(destination))
                 return;
@@ -200,7 +204,7 @@ namespace Nolib.Node
             RegisterTransition(new Transition(source, destination, predicate));
         }
 
-        protected internal void AddTransition(Node source, Node destination, UnityEvent unityEvent)
+        protected internal void AddTransition(INode source, INode destination, UnityEvent unityEvent)
         {
             if (!IsValidNode(source) || !IsValidNode(destination))
                 return;
@@ -210,7 +214,7 @@ namespace Nolib.Node
             RegisterTransition(new Transition(source, destination, unityEvent));
         }
         
-        protected internal void AddTransition<T>(Node source, Node destination, UnityEvent<T> unityEvent)
+        protected internal void AddTransition<T>(INode source, INode destination, UnityEvent<T> unityEvent)
         {
             if (!IsValidNode(source) || !IsValidNode(destination))
                 return;
@@ -220,7 +224,7 @@ namespace Nolib.Node
             RegisterTransition(new Transition<T>(source, destination, unityEvent));
         }
         
-        protected internal void AddTransitionFromAnyNode(Node destination, Func<bool> predicate)
+        protected internal void AddTransitionFromAnyNode(INode destination, Func<bool> predicate)
         {
             if (!IsValidNode(destination))
                 return;
@@ -229,7 +233,7 @@ namespace Nolib.Node
             RegisterAnyNodeTransition(destination, new PollCondition(predicate));
         }
 
-        protected internal void AddTransitionFromAnyNode(Node destination, UnityEvent unityEvent)
+        protected internal void AddTransitionFromAnyNode(INode destination, UnityEvent unityEvent)
         {
             if (!IsValidNode(destination))
                 return;
@@ -238,7 +242,7 @@ namespace Nolib.Node
             RegisterAnyNodeTransition(destination, new UnityEventCondition(unityEvent));
         }
         
-        protected internal void AddTransitionFromAnyNode<T>(Node destination, UnityEvent<T> unityEvent)
+        protected internal void AddTransitionFromAnyNode<T>(INode destination, UnityEvent<T> unityEvent)
         {
             if (!IsValidNode(destination))
                 return;
@@ -247,17 +251,17 @@ namespace Nolib.Node
             RegisterAnyNodeTransition(destination, new UnityEventCondition<T>(unityEvent));
         }
 
-        protected internal void AddTransitionToPreviousNode(Node source, Func<bool> predicate) => AddTransition(source, traceBackNode, predicate);
-        protected internal void AddTransitionToPreviousNode(Node source, UnityEvent unityEvent) => AddTransition(source, traceBackNode, unityEvent);
-        protected internal void AddTransitionToPreviousNode<T>(Node source, UnityEvent<T> unityEvent) => AddTransition(source, traceBackNode, unityEvent);
+        protected internal void AddTransitionToPreviousNode(INode source, Func<bool> predicate) => AddTransition(source, traceBackNode, predicate);
+        protected internal void AddTransitionToPreviousNode(INode source, UnityEvent unityEvent) => AddTransition(source, traceBackNode, unityEvent);
+        protected internal void AddTransitionToPreviousNode<T>(INode source, UnityEvent<T> unityEvent) => AddTransition(source, traceBackNode, unityEvent);
 
-        protected internal void AddTransitionToExitNode(Node source, Func<bool> predicate) => AddTransition(source, exitNode, predicate);
-        protected internal void AddTransitionToExitNode(Node source, UnityEvent unityEvent) => AddTransition(source, exitNode, unityEvent);
-        protected internal void AddTransitionToExitNode<T>(Node source, UnityEvent<T> unityEvent) => AddTransition(source, exitNode, unityEvent);
+        protected internal void AddTransitionToExitNode(INode source, Func<bool> predicate) => AddTransition(source, exitNode, predicate);
+        protected internal void AddTransitionToExitNode(INode source, UnityEvent unityEvent) => AddTransition(source, exitNode, unityEvent);
+        protected internal void AddTransitionToExitNode<T>(INode source, UnityEvent<T> unityEvent) => AddTransition(source, exitNode, unityEvent);
 
-        protected internal void AddTransitionFromSelectorNode(Node destination, Func<bool> predicate) => AddTransition(selectorNode, destination, predicate);
-        protected internal void AddTransitionFromSelectorNode(Node destination, UnityEvent unityEvent) => AddTransition(selectorNode, destination, unityEvent);
-        protected internal void AddTransitionFromSelectorNode<T>(Node destination, UnityEvent<T> unityEvent) => AddTransition(selectorNode, destination, unityEvent);
+        protected internal void AddTransitionFromSelectorNode(INode destination, Func<bool> predicate) => AddTransition(selectorNode, destination, predicate);
+        protected internal void AddTransitionFromSelectorNode(INode destination, UnityEvent unityEvent) => AddTransition(selectorNode, destination, unityEvent);
+        protected internal void AddTransitionFromSelectorNode<T>(INode destination, UnityEvent<T> unityEvent) => AddTransition(selectorNode, destination, unityEvent);
         #endregion
 
         #region Transition Operations
@@ -272,7 +276,7 @@ namespace Nolib.Node
             transitionMap[transition.Source].Add(transition);
         }
         
-        protected void RegisterAnyNodeTransition(Node destination, ICondition condition)
+        protected void RegisterAnyNodeTransition(INode destination, ICondition condition)
         {
             if (!anyNodeTransitionMap.ContainsKey(destination))
                 anyNodeTransitionMap.Add(destination, new List<ITransition>());
@@ -303,7 +307,7 @@ namespace Nolib.Node
             return null;
         }
         
-        protected void TransitionToNode(Node node)
+        protected void TransitionToNode(INode node)
         {
             currentNode.OnExit();
             DeactivateConditions(currentNode);
@@ -315,7 +319,7 @@ namespace Nolib.Node
             currentTransitionSet = transitionMap[currentNode];
         }
 
-        protected void ActivateConditions(Node node)
+        protected void ActivateConditions(INode node)
         {
             foreach (var destinationNode in anyNodeTransitionMap.Keys)
             {
@@ -327,7 +331,7 @@ namespace Nolib.Node
                 transition.ActivateCondition();
         }
         
-        protected void DeactivateConditions(Node node)
+        protected void DeactivateConditions(INode node)
         {
             foreach (var destinationNode in anyNodeTransitionMap.Keys)
             {
@@ -341,7 +345,7 @@ namespace Nolib.Node
         #endregion
         
         #region Validations
-        protected bool IsValidNode(Node node)
+        protected bool IsValidNode(INode node)
         {
             if (node == null)
             {

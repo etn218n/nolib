@@ -10,7 +10,7 @@ namespace Nolib.Node
         private List<NodeStatus> statuses;
         private TerminationPolicy policy;
 
-        public Parallel(TerminationPolicy policy, params Node[] children) : base(children)
+        public Parallel(TerminationPolicy policy, params INode[] children) : base(children)
         {
             this.policy   = policy;
             this.statuses = new List<NodeStatus>(children.Length);
@@ -19,17 +19,17 @@ namespace Nolib.Node
                 statuses.Add(NodeStatus.Failure);
         }
 
-        protected override void OnChildNodeAdded(Node node)
+        protected override void OnChildNodeAdded(INode node)
         {
             statuses.Add(NodeStatus.Failure);
         }
 
-        protected override void OnChildNodeRemoved(Node node)
+        protected override void OnChildNodeRemoved(INode node)
         {
             statuses.RemoveAt(children.IndexOf(node));
         }
 
-        protected internal override NodeStatus OnTick(float deltaTime)
+        protected internal override NodeStatus InternalOnTick(float deltaTime)
         {
             if (!isConditionMet)
                 return NodeStatus.Failure;
