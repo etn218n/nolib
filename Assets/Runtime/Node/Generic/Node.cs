@@ -103,4 +103,33 @@ namespace Nolib.Node.Generic
         protected internal virtual void OnPostTick(T context, float deltaTime) { }
         protected internal virtual NodeStatus OnTick(T context, float deltaTime) { return NodeStatus.Failure; }
     }
+    
+    public abstract class ScriptableObjectNode<T> : ScriptableObject, INode<T>
+    {
+        private INode<T> parent;
+
+        INode<T> INode<T>.Parent
+        {
+            get => parent;
+            set => parent = value;
+        }
+        
+        void INode<T>.OnEnter(T context) => OnEnter(context);
+        void INode<T>.OnUpdate(T context, float deltaTime) => OnUpdate(context, deltaTime);
+        void INode<T>.OnFixedUpdate(T context, float deltaTime) => OnFixedUpdate(context, deltaTime);
+        void INode<T>.OnLateUpdate(T context, float deltaTime) => OnLateUpdate(context, deltaTime);
+        void INode<T>.OnExit(T context) => OnExit(context);
+        void INode<T>.OnPreTick(T context, float deltaTime) => OnPreTick(context, deltaTime);
+        void INode<T>.OnPostTick(T context, float deltaTime) => OnPostTick(context, deltaTime);
+        NodeStatus INode<T>.OnTick(T context, float deltaTime) => OnTick(context, deltaTime);
+        
+        protected internal virtual void OnEnter(T context) { }
+        protected internal virtual void OnUpdate(T context, float deltaTime) { }
+        protected internal virtual void OnFixedUpdate(T context, float deltaTime) { }
+        protected internal virtual void OnLateUpdate(T context, float deltaTime) { }
+        protected internal virtual void OnExit(T context) { }
+        protected internal virtual void OnPreTick(T context, float deltaTime) { }
+        protected internal virtual void OnPostTick(T context, float deltaTime) { }
+        protected internal virtual NodeStatus OnTick(T context, float deltaTime) { return NodeStatus.Failure; }
+    }
 }
